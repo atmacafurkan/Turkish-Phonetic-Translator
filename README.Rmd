@@ -1,0 +1,84 @@
+---
+title: "Turkish Phonetic Translator"
+output: github_document
+---
+
+```{r setup, include=FALSE, echo=F}
+library(tidyverse)
+library(magrittr)
+allophones <- read_csv2("allophones.csv")
+underlying <-read_csv2("underlying.csv")
+n_consonants <- allophones %>% subset(category == "consonant") %>% .$category %>% length()
+n_vowels <- allophones %>% subset(category == "vowel") %>% .$category %>% length()
+consonants <- allophones %>% subset(category == "consonant") %>% .$allophone
+vowels <- allophones %>% subset(category == "vowel") %>% .$allophone
+underlying_affricates <- underlying %>% subset(vector_2 == "affricate" & vector_3 ==0) %>% .$allophone
+underlying_stops <- underlying %>% subset(vector_2 == "stop" & vector_3 ==0) %>% .$allophone
+back_vowels <- underlying %>% subset(vector_1 == "back" & add_2 ==0 & orthography != "ı") %>% .$allophone
+laterals <- allophones %>% subset(vector_2 =="lateral") %>% .$allophone
+sonorants <- underlying %>% subset(vector_3 =="sonorant") %>% .$allophone
+front_vowels <- underlying %>% subset(category == "vowel" & vector_1 == "front") %>% .$allophone
+rounds <- allophones %>% subset(vector_3 == "round") %>% .$allophone
+
+```
+
+
+## What does this do?
+
+This is a G2P (grapheme to phoneme) translator for Turkish that uses orthography and phonotactic rules. It additionally syllabifies the translated words. There are two .csv files encoding underlying and allophonic sounds. There are `r n_consonants` phonemes for consonants and `r n_vowels` phonemes for vowels.
+
+* **Consonants IPA:** `r consonants`
+* **Vowels IPA:** `r vowels`
+
+### Currently implemented phonetic rules
+
+* **Vowel fronting**<br>
+  Short back vowels (`r back_vowels`) are fronted when they are in the environment of a liquid (j) or preceded by a lateral (`r laterals`).
+
+
+* **Open "e"**<br>
+ The vowel "e" gets more open (`r allophones[5,6]`) preceding a sonorant (`r sonorants`).
+
+
+* **Consonant fronting**<br>
+Velar consonants (g,h,k) are fronted when preceding a front vowel (`r front_vowels`)
+
+
+* **Consonant aspiration**<br>
+  Voiceless stops (`r underlying_stops`) and affricate (`r underlying_affricates`) are aspirated word finally, preceding a vowel and in complex onsets.
+
+
+* **V changes**<br>
+The underlying voiced labiodental fricative (v) becomes an approximant (`r allophones[50,6]`) in between vowels and if one of the vowels are round (`r rounds`). It becomes a bilabial (`r allophones[49,6]`) if it is in the environment of a round vowel and a consonant.
+
+
+* **F changes**<br>
+The underlying voiceless labiodental fricative (f) becomes a bilabial (`r allophones[22,6]`) if it is in the environment of a round vowel (`r rounds`).
+
+
+* **R changes**<br>
+The underlying alveolar rhotic (r) becomes a tap (`r allophones[42,6]`) at the end of a word. It becomes a trill (`r allophones[41,6]`) in the beginning of a word.
+
+
+## Version info
+
+Alpha. Further development points:
+
+1. Improve the rule profile
+2. Turn the script into a function with toggleable rules
+3. Include a dictionary for exceptional underlying forms
+4. Overhaul (version shift Beta)
+5. Provide a rule writing scheme
+6. Optimize for bulk translation
+7. Come up with a learning algorithm for selecting epenthesis in consonant clusters (version shift 1.0)
+8. Provide acoustic profile for underlying forms
+
+
+
+
+
+
+
+
+
+

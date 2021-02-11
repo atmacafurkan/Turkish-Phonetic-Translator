@@ -4,7 +4,7 @@ Turkish Phonetic Translator
 ## What does this do?
 
 This is a G2P (grapheme to phoneme) translator for Turkish that uses
-orthography and phonotactic rules. Additionally it syllabifies the
+orthography and phonotactic rules. It additionally syllabifies the
 translated words. There are two .csv files encoding underlying and
 allophonic sounds. There are 37 phonemes for consonants and 15 phonemes
 for vowels.
@@ -19,8 +19,8 @@ for vowels.
     they are in the environment of a liquid (j) or preceded by a lateral
     (l, ɬ, ʎ).
 
--   **Open “e”**<br> The vowel “e” gets more open preceding a sonorant
-    (l, m, n, r, j).
+-   **Open “e”**<br> The vowel “e” gets more open (ɜ) preceding a
+    sonorant (l, m, n, r, j).
 
 -   **Consonant fronting**<br> Velar consonants (g,h,k) are fronted when
     preceding a front vowel (e, i, i:, y, ø)
@@ -31,15 +31,16 @@ for vowels.
 
 -   **V changes**<br> The underlying voiced labiodental fricative (v)
     becomes an approximant (ʋ) in between vowels and if one of the
-    vowels are round. It becomes a bilabial (β) if it is in the
-    environment of a round vowel and a consonant.
+    vowels are round (u, u:, u̟, y, o, o̟, ø). It becomes a bilabial (β)
+    if it is in the environment of a round vowel and a consonant.
 
 -   **F changes**<br> The underlying voiceless labiodental fricative (f)
-    becomes a bilabial (ɸ) if it is in the environment of a round vowel.
+    becomes a bilabial (ɸ) if it is in the environment of a round vowel
+    (u, u:, u̟, y, o, o̟, ø).
 
 -   **R changes**<br> The underlying alveolar rhotic (r) becomes a tap
-    (r̥) at the end of a word. It becomes a trill (ɹ) in the word
-    beginning.
+    (r̥) at the end of a word. It becomes a trill (ɹ) in the beginning of
+    a word.
 
 ## Version info
 
