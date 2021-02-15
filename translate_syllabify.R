@@ -8,12 +8,12 @@ library(pbapply)
 library(foreach)
 library(doSNOW)
 
-df_underlying <- read_csv2("../../underlying.csv")
-df_allophones <- read_csv2("../../allophones.csv")
+df_underlying <- read_csv2("underlying.csv")
+df_allophones <- read_csv2("allophones.csv")
 
 
 ### SENTENCES INPUT ###
-sentences <- readRDS("tdk_inventory.rds") %>% .$word %>% tolower() %>% unique()
+sentences <- readRDS("words_tdk.rds") %>% drop_na() %>% .$word %>% tolower() %>% unique()
 
 
 vowels <- df_allophones %>% subset(category == "vowel") %>% .$allophone
@@ -42,7 +42,7 @@ final_parse <- foreach(each=start_point:iterations, .combine = rbind, .options.s
   library(magrittr)
   output_words <- tibble(sentence = character(), word = character(), transcribed = character(), syllabified = character(),
                          syllable = character(), syl_num = integer())
-  words <- str_split(sentences[each], pattern = "\\s") %>% unlist()
+  words <- str_split(sentences[each], pattern = "\\s") %>% unlist() %>% stri_remove_empty()
   for (every in 1:length(words)){
     translated <- tibble(sentence = character(), word = character(), phonetic = character())
     letters <- str_split(words[every], pattern = "") %>% unlist()
@@ -207,10 +207,12 @@ for (whole in 1:length(df_nucleus$class)){
         next_nuc_num <- df_nucleus$order[whole+1]*1
         
         # coda number(s)
-        if (is.na(next_nuc_num)){
+        if (is.na(next_nuc_num)& nucleus_num+1>length(df$letters)){
+          coda_num <- integer()
+        } else if (is.na(next_nuc_num) ){ 
           coda_num <- ((nucleus_num+1):(length(df$letters)))*1 # for word endings
-        } else if (nucleus_num == (next_nuc_num -1)){ # for vowel clusters
-          coda_num = integer()
+        }else if (nucleus_num == (next_nuc_num -1)){ # for vowel clusters
+          coda_num <- integer()
         } else if (length(nucleus_num:next_nuc_num)>4 & 
                    (df$letters[(nucleus_num+1):(next_nuc_num-1)] %>%
                     as.data.frame() %>% dplyr::select(letters = ".") %>%
@@ -223,7 +225,7 @@ for (whole in 1:length(df_nucleus$class)){
         }
         
         # coda
-        if (coda_num>length(df$letters)||length(coda_num)=="0"){
+        if (coda_num > length(df$letters)||length(coda_num)=="0"){
           coda <- character()
         } else {
           coda <- paste(df$letters[coda_num], collapse = "")
@@ -233,7 +235,7 @@ for (whole in 1:length(df_nucleus$class)){
         
         # make up the syllable
         syllable <- paste0(onset,nucleus,coda)
-        syl_for_structure <- paste(paste(df$letters[onset_num], collapse="-"), nucleus, coda, sep ="-")
+        syl_for_structure <- paste(paste(df$letters[onset_num], collapse="-"), nucleus, paste(df$letters[coda_num], collapse = "-"), sep ="-")
         
         # make up the syllable structure
         syllable_look <- syl_for_structure %>% str_split("-") %>% unlist() %>% stringi::stri_remove_empty() %>%
@@ -267,6 +269,6 @@ output_words
 close(pb)
 stopCluster(core_cluster)
 
-saveRDS(final_parse, "output.rds")
+saveRDS(final_parse, "translated_tdk.rds")
 
 
